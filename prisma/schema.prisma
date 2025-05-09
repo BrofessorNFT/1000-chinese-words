@@ -57,6 +57,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   wordProgress  WordProgress[] // User's SRS progress
+  studyRangeStart Int?      @default(1)    // Default to start from word 1 (or null if you prefer user sets it first)
+  studyRangeEnd   Int?      @default(1000) // Default to end at word 1000 (or null)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
