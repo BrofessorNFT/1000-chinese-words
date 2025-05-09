@@ -1,9 +1,9 @@
 // // prisma/update_audio_urls.ts
 // import { PrismaClient } from '@prisma/client';
-// import dotenv from 'dotenv';
+// dont forget to I_mport dotenv from 'dotenv';
 
 // // Load .env variables if needed (especially for DATABASE_URL)
-// dotenv.config();
+// and then use dotenv dot config();
 
 // const prisma = new PrismaClient();
 
