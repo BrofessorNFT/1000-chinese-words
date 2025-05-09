@@ -27,29 +27,29 @@ export default function SrsInfoPage() {
 
           <div className="prose prose-slate dark:prose-invert max-w-none space-y-4 text-slate-700 dark:text-slate-300">
             <p>
-              Spaced Repetition System (SRS) is a powerful learning technique based on the psychological principle of the **spacing effect**. It's incredibly effective for memorizing large amounts of information, like vocabulary!
+              Spaced Repetition System (SRS) is a powerful learning technique based on the psychological principle of the **spacing effect**. It&aposs incredibly effective for memorizing large amounts of information, like vocabulary!
             </p>
 
             <h2 className="text-2xl font-semibold mt-6 mb-3">How Does It Work?</h2>
             <p>
-              Instead of cramming, SRS schedules reviews of learned items at increasing intervals. When you first learn a word, you'll review it soon. Each time you successfully recall it, the time until the *next* review increases exponentially.
+              Instead of cramming, SRS schedules reviews of learned items at increasing intervals. When you first learn a word, you&aposll review it soon. Each time you successfully recall it, the time until the *next* review increases exponentially.
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Words you find **easy** are shown less frequently.</li>
               <li>Words you find **hard** are shown more frequently.</li>
             </ul>
             <p>
-              This targets the optimal moment just before you're about to forget, strengthening the memory trace efficiently without wasting time on things you already know well.
+              This targets the optimal moment just before you&aposre about to forget, strengthening the memory trace efficiently without wasting time on things you already know well.
             </p>
 
             <h2 className="text-2xl font-semibold mt-6 mb-3">Why Use SRS for Chinese?</h2>
              <ul className="list-disc pl-5 space-y-1">
-                <li>**Efficiency:** Focus your effort where it's needed most.</li>
+                <li>**Efficiency:** Focus your effort where it&aposs needed most.</li>
                 <li>**Long-Term Retention:** Builds strong, lasting memories, not just short-term recall.</li>
                 <li>**Overcomes the Forgetting Curve:** Actively combats the natural tendency to forget information over time.</li>
             </ul>
 
-             <h2 className="text-2xl font-semibold mt-6 mb-3">Our App's System</h2>
+             <h2 className="text-2xl font-semibold mt-6 mb-3">Our App&aposs System</h2>
              <p>
                When you review a flashcard in our app (while logged in):
              </p>
@@ -59,7 +59,7 @@ export default function SrsInfoPage() {
                 <li>**Easy:** You recalled it effortlessly. The interval will increase even more significantly (e.g., several days, then weeks).</li>
              </ul>
              <p>
-               Stick with it consistently, and you'll be amazed at how effectively you can build and retain your Chinese vocabulary!
+               Stick with it consistently, and you&aposll be amazed at how effectively you can build and retain your Chinese vocabulary!
              </p>
           </div>
 

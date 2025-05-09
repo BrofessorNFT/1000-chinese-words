@@ -85,7 +85,14 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
       setIsSubmitting(false);
       if (!response.ok) { /* ... error handling ... */ throw new Error(/*...*/); }
       startTransition(() => { router.refresh(); });
-    } catch (err: any) { /* ... error handling ... */ setIsSubmitting(false); }
+    } catch (err: unknown) 
+    {  let errorMessage = "An unexpected error occurred.";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      console.error("Error in handleReview catch block:", err); // err is used here
+      setError(errorMessage);
+      setIsSubmitting(false); }
    };
 
   // --- Loading State ---

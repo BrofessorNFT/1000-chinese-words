@@ -1,7 +1,8 @@
 // src/app/api/user/progress/route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next'; // Import getServerSession
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Import your authOptions
+// import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Import your authOptions
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { calculateSrs, ReviewQuality } from '@/lib/srs';
 
@@ -22,7 +23,8 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    console.log(error)
+    return NextResponse.json({ _error: 'Invalid request body' }, { status: 400 });
   }
 
   const { wordId, quality } = body;

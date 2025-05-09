@@ -20,7 +20,7 @@ export function calculateSrs(
   quality: ReviewQuality
 ): SrsCalculationResult {
   const now = new Date();
-  let currentLevel = progress?.level ?? 0; // Default to level 0 if no progress exists
+  const currentLevel = progress?.level ?? 0; // Default to level 0 if no progress exists
 
   let newLevel: number;
   let intervalDays: number;

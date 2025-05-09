@@ -4,8 +4,9 @@ import { WordWithExamples, getRandomWord } from '@/lib/prisma'; // Keep getRando
 import prisma from '@/lib/prisma'; // Import prisma directly for specific queries
 import AuthButton from '@/components/AuthButton';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { NextURL } from 'next/dist/server/web/next-url';
+// import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
+
 import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle'; 
 // No longer force dynamic always, let caching work where possible,
@@ -119,7 +120,7 @@ export default async function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <p className="font-semibold">Congratulations!</p>
-              <p>You're all caught up on your reviews for now.</p>
+              <p>You&apos;re all caught up on your reviews for now.</p>
               <p className="text-sm text-slate-500">Check back later for new reviews.</p>
             </div>
           ) : (

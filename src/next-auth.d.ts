@@ -1,7 +1,7 @@
 // src/next-auth.d.ts
-import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
-import { JWT } from "next-auth/jwt";
-
+// import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
+// import { JWT } from "next-auth/jwt";
+import { DefaultSession } from "next-auth"; 
 // Extend the built-in session types
 declare module "next-auth" {
   /**
