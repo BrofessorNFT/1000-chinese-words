@@ -1,0 +1,12 @@
+// tsconfig.seed.json
+{
+    "extends": "./tsconfig.json", // Inherit settings from your main tsconfig
+    "compilerOptions": {
+      // Override the module system specifically for this script execution
+      "module": "CommonJS",
+      // Ensure ts-node doesn't try to output files based on this config
+      "noEmit": true
+    },
+    // Tell ts-node to only consider this file when using this config
+    "include": ["prisma/seed.ts"]
+  }
