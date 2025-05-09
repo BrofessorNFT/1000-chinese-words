@@ -6,6 +6,7 @@ import { WordWithExamples } from '@/lib/prisma';
 import { useRouter } from 'next/navigation';
 import { FaVolumeUp, FaSpinner } from 'react-icons/fa'; // Assuming react-icons installed
 import { useSession } from 'next-auth/react'; // <<<--- IMPORT useSession
+import Link from 'next/link';
 interface FlashcardProps {
   word: WordWithExamples;
 }
@@ -58,7 +59,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const { data: session, status: sessionStatus } = useSession(); 
+  const {status: sessionStatus } = useSession(); 
   useEffect(() => { /* ... same effect code ... */
     if (!isPending) {
         setShowDetails(false); setIsSubmitting(false); setIsPlaying(false);
@@ -89,7 +90,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
       const response = await fetch('/api/user/progress', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(requestBody)});
       setIsSubmitting(false);
       if (!response.ok) {
-        let errorData = { error: `API Error ${response.status}: ${response.statusText}` };
+        const errorData = { error: `API Error ${response.status}: ${response.statusText}` };
         try {
           // Try to parse a more specific error message from the API response body
           const parsedError = await response.json();
@@ -97,6 +98,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
             errorData.error = parsedError.error;
           }
         } catch (e) {
+          console.log(e)
           // Ignore if parsing response body fails, use the generic status error
           console.warn("Could not parse error response from /api/user/progress");
         }
@@ -239,7 +241,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
                 Next Random Card
               </button>
               <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                <a href="/api/auth/signin/google" className="underline hover:text-pink-500">Sign in</a> to save progress.
+                <Link href="/api/auth/signin/google" className="underline hover:text-pink-500">Sign in</Link> to save progress.
               </p>
             </div>
           )}
