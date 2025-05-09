@@ -5,7 +5,7 @@ import React, { useState, useEffect, useTransition, useRef } from 'react';
 import { WordWithExamples } from '@/lib/prisma';
 import { useRouter } from 'next/navigation';
 import { FaVolumeUp, FaSpinner } from 'react-icons/fa'; // Assuming react-icons installed
-
+import { useSession } from 'next-auth/react'; // <<<--- IMPORT useSession
 interface FlashcardProps {
   word: WordWithExamples;
 }
@@ -58,7 +58,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const { data: session, status: sessionStatus } = useSession(); 
   useEffect(() => { /* ... same effect code ... */
     if (!isPending) {
         setShowDetails(false); setIsSubmitting(false); setIsPlaying(false);
@@ -77,13 +77,35 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
      }
      audioRef.current.play().catch(err => { console.error("Audio play failed:", err); setError("Playback failed."); setIsPlaying(false); });
    };
-  const handleReview = async (quality: ReviewQualityValue) => { /* ... same function code ... */
-    if (!word || isSubmitting || isPending) return; setIsSubmitting(true); setError(null); if (audioRef.current) audioRef.current.pause();
+  const handleReview = async (quality: ReviewQualityValue) => { 
+    if (!word || isSubmitting || isPending || sessionStatus !== 'authenticated') return;
+    setError(null); // Clear previous errors
+    setIsSubmitting(true);
+    setError(null);
+    if (audioRef.current) audioRef.current.pause();
+    // if (!word || isSubmitting || isPending) return; setIsSubmitting(true); setError(null); if (audioRef.current) audioRef.current.pause();
     try {
       const requestBody = { wordId: word.id, quality: quality };
       const response = await fetch('/api/user/progress', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(requestBody)});
       setIsSubmitting(false);
-      if (!response.ok) { /* ... error handling ... */ throw new Error(/*...*/); }
+      if (!response.ok) {
+        let errorData = { error: `API Error ${response.status}: ${response.statusText}` };
+        try {
+          // Try to parse a more specific error message from the API response body
+          const parsedError = await response.json();
+          if (parsedError && parsedError.error) {
+            errorData.error = parsedError.error;
+          }
+        } catch (e) {
+          // Ignore if parsing response body fails, use the generic status error
+          console.warn("Could not parse error response from /api/user/progress");
+        }
+        if (errorData.error === "Unauthorized") {
+          throw new Error("Please sign in to save your progress.");
+      }
+        // Throw a new Error with the determined error message
+        throw new Error(errorData.error); // <<<< CORRECTED: No comments inside constructor
+      }
       startTransition(() => { router.refresh(); });
     } catch (err: unknown) 
     {  let errorMessage = "An unexpected error occurred.";
@@ -94,16 +116,23 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
       setError(errorMessage);
       setIsSubmitting(false); }
    };
-
+    const handleNextRandomCard = () => {
+      if (isPending) return; // Prevent multiple clicks while refreshing
+      setError(null);
+      if (audioRef.current) audioRef.current.pause();
+      startTransition(() => {
+          router.refresh(); // This will call getRandomWord on the server
+      });
+  };
   // --- Loading State ---
-  if (isPending) {
+  if (isPending || sessionStatus === 'loading') {
     return (
       <div className="p-10 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 flex items-center justify-center min-h-[450px]"> {/* Adjusted min-height */}
         <FaSpinner className="animate-spin h-10 w-10 text-pink-500 dark:text-pink-400" /> {/* Pink spinner */}
       </div>
     );
   }
-
+  const isAuthenticated = sessionStatus === 'authenticated';
   // --- Main Card Rendering ---
   return (
     // Card: Semi-transparent bg on light mode, blurred backdrop, larger padding, rounded, shadow
@@ -152,6 +181,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
       )}
 
       {/* Details Section */}
+
       {showDetails && (
         <div className="space-y-8 transition-opacity duration-300 ease-in-out opacity-100">
           {/* Translation */}
@@ -159,39 +189,64 @@ const Flashcard: React.FC<FlashcardProps> = ({ word }) => {
             <h3 className="text-xs font-semibold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-widest">Translation</h3>
             <p className="text-lg text-slate-700 dark:text-slate-300">{word.translation_en}</p>
           </div>
+
           {/* Examples */}
           {word.exampleSentences.length > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-slate-400 dark:text-slate-500 mb-3 uppercase tracking-widest">Examples</h3>
               <ul className="space-y-4">
                 {word.exampleSentences.map((sentence) => (
-                  <li key={sentence.id} className="text-base text-slate-600 dark:text-slate-400 pl-3 border-l-2 border-pink-200 dark:border-pink-800/50"> {/* Pink accent border */}
+                  <li key={sentence.id} className="text-base text-slate-600 dark:text-slate-400 pl-3 border-l-2 border-pink-200 dark:border-pink-800/50">
                     <p className="font-normal">{sentence.sentence_hanzi}</p>
+                    {/* Optional: Add Pinyin/Translation for example sentences if available in your data
+                    {sentence.sentence_pinyin && <p className="text-sm text-slate-500">{sentence.sentence_pinyin}</p>}
+                    {sentence.sentence_translation_en && <p className="text-sm text-slate-500">{sentence.sentence_translation_en}</p>}
+                    */}
                   </li>
                 ))}
               </ul>
             </div>
           )}
-          {/* SRS Interaction Buttons */}
-          <div className="pt-6">
-            <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">Recall difficulty?</p>
-            {error && <p className="text-center text-sm text-rose-600 dark:text-rose-400 mb-3">Error: {error}</p>}
-            {/* Use V2 helper function for button classes */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {reviewQualities.map((quality) => (
-                <button
-                  key={quality.value}
-                  onClick={() => handleReview(quality.value as ReviewQualityValue)}
-                  disabled={isSubmitting}
-                  className={getButtonClassesV2(quality.baseColorName, isSubmitting)} // Use V2 helper
-                >
-                  {quality.label}
-                </button>
-              ))}
+
+          {/* --- Conditional Rendering of SRS Buttons OR Next Random Card Button --- */}
+          {isAuthenticated ? (
+            // LOGGED-IN USER: Show SRS buttons
+            <div className="pt-6">
+              <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">Recall difficulty?</p>
+              {error && <p className="text-center text-sm text-rose-600 dark:text-rose-400 mb-3">{error}</p>}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {reviewQualities.map((quality) => (
+                  <button
+                    key={quality.value}
+                    onClick={() => handleReview(quality.value as ReviewQualityValue)}
+                    disabled={isSubmitting}
+                    className={getButtonClassesV2(quality.baseColorName, isSubmitting)}
+                  >
+                    {quality.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            // ANONYMOUS USER: Show "Next Random Card" button
+            <div className="pt-6 text-center">
+              {error && <p className="text-center text-sm text-rose-600 dark:text-rose-400 mb-3">{error}</p>}
+              <button
+                onClick={handleNextRandomCard}
+                disabled={isPending}
+                className="px-6 py-2.5 text-sm font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full shadow-sm border border-transparent hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:focus:ring-pink-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition"
+              >
+                Next Random Card
+              </button>
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                <a href="/api/auth/signin/google" className="underline hover:text-pink-500">Sign in</a> to save progress.
+              </p>
+            </div>
+          )}
+          {/* --- End Conditional Rendering --- */}
         </div>
       )}
+
     </div>
   );
 };
