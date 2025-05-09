@@ -31,7 +31,7 @@ interface PageClientContentProps {
     const userId = session?.user?.id;
   
     return (
-      <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-50 via-stone-50 to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-700 dark:text-slate-300 selection:bg-pink-300 dark:selection:bg-pink-700">
+      <div className="flex min-h-screen flex-col from-slate-50 via-stone-50 to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-700 dark:text-slate-300 selection:bg-pink-300 dark:selection:bg-pink-700">
         <header className="w-full p-3 sm:p-4 flex justify-between items-center sticky top-0 z-10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800">
           <Link href="/" className="text-lg font-semibold text-slate-800 dark:text-slate-200 hover:opacity-80 transition">
             1000 Chinese Words
@@ -68,7 +68,7 @@ interface PageClientContentProps {
             {initialWord ? (
               <Flashcard word={initialWord} />
             ) : userId ? (
-              <div className="p-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-slate-800/50 min-h-[300px] flex flex-col items-center justify-center space-y-3 text-center">
+              <div className="p-6 bg-white dark:bg-slate-700 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-slate-800/50 min-h-[300px] flex flex-col items-center justify-center space-y-3 text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-emerald-500 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
